@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Restaurant Website</title>
+</head>
+<body onload="getMenu()">
+	<h1>Menu</h1>
+	<ul id="menu"></ul>
+	<button onclick="placeOrder()">Place Order</button>
+	<script>
+		function getMenu() {
+			fetch('https://free-food-menus-api-production.up.railway.app/burgers')
+			.then(response => response.json())
+			.then(data => {
+				const menu = document.getElementById('menu');
+				data.forEach(item => {
+					const li = document.createElement('li');
+					li.innerText = item.name + ' - $' + item.price;
+					menu.appendChild(li);
+				});
+			})
+			.catch(error => console.log(error));
+		}
+
+		function takeOrder() {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					const burgers = [];
+					const menu = document.getElementById('menu');
+					for (let i = 0; i < 3; i++) {
+						const index = Math.floor(Math.random() * menu.childElementCount);
+						const burger = menu.children[index].innerText.split(' - ')[0];
+						burgers.push(burger);
+					}
+					const order = {burgers};
+					resolve(order);
+				}, 2500);
+			});
+		}
+
+		function orderPrep() {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					const order_status = true;
+					const paid = false;
+					const order = {order_status, paid};
+					resolve(order);
+				}, 1500);
+			});
+		}
+
+		function payOrder() {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					const order_status = true;
+					const paid = true;
+					const order = {order_status, paid};
+					resolve(order);
+				}, 1000);
+			});
+		}
+
+		function thankyouFnc() {
+			alert('Thank you for your order!');
+		}
+
+		async function placeOrder() {
+			const order = await takeOrder();
+			console.log('Order:', order);
+			const order_status = await orderPrep();
+			console.log('Order Status:', order_status);
+			const paid_status = await payOrder();
+			console.log('Paid Status:', paid_status);
+			if (paid_status.paid) {
+				thankyouFnc();
+			}
+		}
+	</script>
+</body>
+</html>
